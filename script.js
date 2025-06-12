@@ -15,17 +15,16 @@ fetch('donnees.txt')
         const lignes = txt.trim().split('\n');
         const tableau = document.getElementById('tableau');
         const recordElt = document.querySelector('.record');
+        const totalPerduElt = document.querySelector('.total-perdu');
 
         if (lignes.length === 0) return;
 
         const enTetes = lignes[0].split(',').map(e => e.trim());
         enTetes.push('Total');
 
-        let record = {
-            tempsSec: 0,
-            prenom: '',
-            date: ''
-        };
+        let record = { tempsSec: 0, prenom: '', date: '' };
+        let totalGlobal = 0;
+        const participants = [];
 
         const thead = document.createElement('thead');
         const ligneEnTete = document.createElement('tr');
@@ -45,35 +44,44 @@ fetch('donnees.txt')
 
             let totalSec = 0;
             const prenom = valeurs[0];
-
-            tr.appendChild(Object.assign(document.createElement('td'), {textContent: prenom}));
+            const tds = [prenom];
 
             for (let j = 1; j < enTetes.length - 1; j++) {
                 const val = valeurs[j] || '';
-                const td = document.createElement('td');
-                td.textContent = val;
-                tr.appendChild(td);
-
                 const sec = tempsEnSecondes(val);
-                if (sec > 0) {
-                    totalSec += sec;
-
-                    if (sec > record.tempsSec) {
-                        record = {
-                            tempsSec: sec,
-                            prenom: prenom,
-                            date: enTetes[j]
-                        };
-                    }
+                totalSec += sec;
+                if (sec > record.tempsSec) {
+                    record = {
+                        tempsSec: sec,
+                        prenom: prenom,
+                        date: enTetes[j]
+                    };
                 }
+                tds.push(val);
             }
 
-            const tdTotal = document.createElement('td');
-            tdTotal.textContent = secondesEnTemps(totalSec);
-            tr.appendChild(tdTotal);
-
-            tbody.appendChild(tr);
+            tds.push(secondesEnTemps(totalSec));
+            participants.push({ prenom, tds, totalSec });
+            totalGlobal += totalSec;
         }
+
+        participants.sort((a, b) => b.totalSec - a.totalSec);
+
+        const medailles = ['🥇', '🥈', '🥉'];
+
+        participants.forEach((p, index) => {
+            const tr = document.createElement('tr');
+            p.tds.forEach((val, i) => {
+                const td = document.createElement('td');
+                if (i === 0 && index < 3) {
+                    td.textContent = `${medailles[index]} ${val}`;
+                } else {
+                    td.textContent = val;
+                }
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
 
         tableau.appendChild(tbody);
 
@@ -82,7 +90,9 @@ fetch('donnees.txt')
         } else {
             recordElt.textContent = `🏆 Aucun record enregistré`;
         }
+
+        totalPerduElt.textContent = `🎯 Temps perdu : ${secondesEnTemps(totalGlobal)}`;
     })
     .catch(err => {
         console.error("Erreur chargement données :", err);
-});
+    });
