@@ -1,7 +1,10 @@
-Prénom, 11/6
-Loris, 1min43
-Jescimiel, 1min45
-Maelyne, 1min58
-Leonel, 3min17
-Jessie, 2min06
-Clémence, 4min20
+Prénom, 11/6, 12/6
+Loris, 1min43, 1min51
+Jescimiel, 1min45, X
+Maelyne, 1min58, X
+Leonel, 3min17, X
+Jessie, 2min06, 6min07
+Clémence, 4min20, 5min36
+Matthys, X, 1min15
+Léandre, X, 1min39
+Adam, X, 6min00
